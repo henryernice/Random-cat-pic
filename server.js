@@ -1,32 +1,22 @@
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
-const $ = require('jquery');
+const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-
-
 app.use(express.static(__dirname + '/public'));
 
-var API_KEY = '35413306-7f2c1e168b9469889cb1cc371';
-
-var API_KEY = '35413306-7f2c1e168b9469889cb1cc371';
-var URL = "https://pixabay.com/api/?key="+API_KEY+"&q="+encodeURIComponent('red roses');
-$.getJSON(URL, function(data) {
-    if (parseInt(data.totalHits) > 0)
-        $.each(data.hits, function(i, hit){ console.log(hit.pageURL); });
-    else
-        console.log('No hits');
-});
+app.use("/Cat-photos", express.static(path.join(__dirname, "Cat-photos")));
 
 
 io.on('connection', (socket) => {
     console.log('A user connected');
     
-    
+    var random_pic = "Cat-photos/cat" + String(Math.ceil(Math.random()*62) + ".JPEG");
+    socket.emit('send-cat', (random_pic));
 
     socket.on('disconnect', () => {
         console.log('A user disconnected');
